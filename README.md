@@ -1,75 +1,37 @@
-# Nuxt Minimal Starter
+# Groundspeed Records UI
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A modern, reactive frontend built with Nuxt 4 and NuxtUI to provide pilots with a platform to submit achieved groundspeeds.
 
-## Setup
+## 1. Technologies & Packages
 
-Make sure to install dependencies:
+- **Nuxt 4:** The framework of choice for its directory-based routing, auto-imports, and Server-Side Rendering (SSR).
+- **NuxtUI v2.19:** A stable component library combining Tailwind CSS and Headless UI for a consistent aviation-themed aesthetic.
+- **pnpm:** Used for strict dependency management and performance.
+- **Tailwind CSS:** Powers the responsive grid layouts and custom styling.
 
-```bash
-# npm
-npm install
+## 2. Components & State Management
 
-# pnpm
-pnpm install
+- **Composables (`app/composables/useAuth.ts`):** Centralized authentication logic using `useCookie` to persist JWT tokens across browser sessions.
+- **Pages Hierarchy:**
+    - `/auth`: Grouped Login and Registration logic.
+    - `/admin`: Dashboard for hierarchy management (Categories/Manufacturers/Models).
+    - `/user`: Private dashboard for pilot submissions.
+    - `/aircraft/[id]`: Dynamic routes to display technical specs and filtered records for specific models.
+- **Reusable Forms:** Extracted form logic (e.g., `FormACModel.vue`) to ensure a "Single Source of Truth" for data entry across Admin and User sections.
 
-# yarn
-yarn install
+## 3. Issues & Solutions
 
-# bun
-bun install
-```
+- **Component Resolution Errors:** Encountered issues with unreleased NuxtUI v3/v4 alpha components.
+    - _Solution:_ Standardized on the stable **NuxtUI v2.19**.
+- **State Syncing:** Dropdowns were not updating when parent data changed.
+    - _Solution:_ Lifted state to the Page level and passed data down via **Props**, using `emit('success')` to trigger refreshes.
+- **Hydration Mismatches:** Browser extensions (LastPass) were injecting HTML into forms.
+    - _Solution:_ Optimized code for cleaner SSR output and verified via Incognito testing.
+- **OAuth2 Login Payload:** Standard JSON login failed against the FastAPI backend.
+    - _Solution:_ Implemented **`URLSearchParams`** to satisfy the required `x-www-form-urlencoded` format.
 
-## Development Server
+## 4. Key Teachings
 
-Start the development server on `http://localhost:3000`:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+- **Dynamic Template Routing:** Leveraged the `[id].vue` pattern to create a single page capable of rendering thousands of unique aircraft spec sheets.
+- **Stateless Frontend:** The UI stores no sensitive data, only a temporary JWT token, making the application highly secure.
+- **Reactive Dependencies:** Used `watch` and `computed` properties in data fetching to create a "drilling" effect for Category → Manufacturer → Model selection.
